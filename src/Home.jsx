@@ -9,25 +9,39 @@ const Home = () => {
     const [list, setList] = useState(getStoreData);
     const [cond, setCond] = useState(true);
     const [editId, setEditId] = useState("");
-    const [strikeIds, setStrikeIds] = useState([]);
+    const [strikeIds, setStrikeIds] = useState(getStrikeData);
 
     useEffect(() => {
         setAsyncStorage("items", list)
     }, [list])
 
+    useEffect(() => {
+        setAsyncStorage("strikeItem", strikeIds)
+    }, [strikeIds])
+
 
     const getStoreData = async () => {
         const dataList = await getAsyncStorage("items")
 
-        // console.log({ dataList })
         if (dataList) {
             setList(dataList);
         }
     }
 
+    const getStrikeData = async () => {
+        const strikeList = await getAsyncStorage("strikeItem")
+
+        if (strikeList) {
+            setStrikeIds(strikeList);
+        }
+    }
+
     useEffect(() => {
         getStoreData();
+        getStrikeData();
     }, [])
+
+
 
     const AddItem = () => {
         if (cond) {
@@ -52,16 +66,13 @@ const Home = () => {
     }
 console.log({strikeIds})
     const strikeItem = (key) => {
-        let idsArr = [];
         const index = strikeIds.findIndex(val=> val === key);
         
         if(index === -1){
-            console.log({indexminus: index})
             setStrikeIds((pre) => {
                 return [...pre,key]
             })
             }else if(index > -1){
-            console.log({index: index})
 
                 setStrikeIds(strikeIds.filter((elem) => {
                     return key !== elem;
@@ -122,7 +133,7 @@ console.log({strikeIds})
                                     disabled={!input}
                                     _icon={{
                                         as: Ionicons,
-                                        name: "add",
+                                        name: cond ? "add" : "pin",
                                     }}
                                     onPress={AddItem}
                                 />
